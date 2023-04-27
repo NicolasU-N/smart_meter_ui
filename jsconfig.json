@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "jsx": "preserve",
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": [
+                "./src/components/*"
+            ],
+            "@store/*": [
+                "./src/store/*"
+            ],
+            "@axiosInstance/*": [
+                "./src/utils/axiosInstance/*"
+            ],
+            // "@globalComponents/*": [
+            //     "./src/global-components/*"
+            // ],
+            // "@icons/*": [
+            //     "./src/components/util/icons/*"
+            // ],
+            // "@hooks/*": [
+            //     "./src/hooks/*"
+            // ],
+            // "@helpers/*": [
+            //     "./src/utils/helpers/*"
+            // ],
+        },
+    },
+}
