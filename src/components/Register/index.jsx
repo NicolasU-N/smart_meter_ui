@@ -44,7 +44,7 @@ const Register = () => {
             type='text'
             name='username'
             onChange={onChange}
-            value={formData.username}
+            defaultValue={formData.username}
             required
           />
         </div>
@@ -57,7 +57,7 @@ const Register = () => {
             type='text'
             name='first_name'
             onChange={onChange}
-            value={formData.firstName}
+            defaultValue={formData.firstName}
             required
           />
         </div>
@@ -70,7 +70,7 @@ const Register = () => {
             type='text'
             name='last_name'
             onChange={onChange}
-            value={formData.lastName}
+            defaultValue={formData.lastName}
             required
           />
         </div>
@@ -83,7 +83,7 @@ const Register = () => {
             type='email'
             name='email'
             onChange={onChange}
-            value={formData.email}
+            defaultValue={formData.email}
             required
           />
         </div>
@@ -96,20 +96,20 @@ const Register = () => {
             type='password'
             name='password'
             onChange={onChange}
-            value={formData.password}
+            defaultValue={formData.password}
             required
           />
         </div>
         <div className='form-group mt-3'>
-          <label className='form-label' htmlFor='password'>
+          <label className='form-label' htmlFor='passwordConfirm'>
             Password Confirm
           </label>
           <input
             className='form-control'
-            type='password'
-            name='password'
+            type='passwordConfirm'
+            name='passwordConfirm'
             onChange={onChange}
-            value={formData.passwordConfirm}
+            defaultValue={formData.passwordConfirm}
             required
           />
         </div>

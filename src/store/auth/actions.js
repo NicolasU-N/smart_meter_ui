@@ -1,7 +1,9 @@
 import axiosInstance from '@axiosInstance'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { useNavigate } from 'react-router-dom'
+
 // import { authActions } from './index'
 
 export const fetchRegister = createAsyncThunk(
@@ -19,7 +21,7 @@ export const fetchRegister = createAsyncThunk(
     try {
       const response = await axiosInstance.post('register/', body)
 
-      const data = await response.json()
+      const data = response.data
 
       if (response.status === 201) {
         return data
@@ -34,18 +36,23 @@ export const fetchRegister = createAsyncThunk(
 
 export const fetchLogin = createAsyncThunk(
   'auth/login',
-  async ({ email, password }, thunkAPI) => {
+  async ({ username, password }, thunkAPI) => {
     const body = JSON.stringify({
-      email,
+      username,
       password
     })
 
     try {
       const response = await axiosInstance.post('login/', body)
+      // console.log('response login-> ', response)
 
-      const data = await response.json()
+      const data = response.data
 
       if (response.status === 200) {
+        // Guardar tokens en el localStorage
+        localStorage.setItem('access_token', data.access)
+        localStorage.setItem('refresh_token', data.refresh)
+
         // Decodificar el token JWT y obtener el user_id
         const decodedToken = jwt_decode(data.access)
         const userId = decodedToken.user_id
@@ -70,7 +77,7 @@ export const fetchUserById = createAsyncThunk(
     try {
       const response = await axiosInstance.get(`users/${userId}/`)
 
-      const data = await response.json()
+      const data = response.data
 
       if (response.status === 200) {
         return data
@@ -85,22 +92,25 @@ export const fetchUserById = createAsyncThunk(
 export const fetchCheckAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, thunkAPI) => {
-    // TODO: Agregar manejo de localstorage
-    const refresh = localStorage.getItem('refresh')
+    const access = localStorage.getItem('access_token')
 
     try {
       const body = JSON.stringify({
-        token: refresh
+        token: access
       })
 
       const response = await axiosInstance.post('verify/', body)
 
-      const data = await response.json()
+      const data = response.data
 
       if (response.status === 200) {
-        // TODO: dispatch fetchUserById
-        // const { dispatch } = thunkAPI
-        // dispatch(getUser())
+        // Decodificar el token JWT y obtener el user_id
+        const decodedToken = jwt_decode(access)
+        const userId = decodedToken.user_id
+        console.log('userId verify-> ', userId)
+        // Llamar a fetchUserById con el user_id
+        const { dispatch } = thunkAPI
+        dispatch(fetchUserById(userId))
 
         return data
       } else {
@@ -116,8 +126,9 @@ export const fetchLogout = createAsyncThunk(
   'auth/logout',
   async (_, thunkAPI) => {
     try {
-      // TODO: Agregar manejo de localstorage
-      const refresh = localStorage.getItem('refresh')
+      const navigate = useNavigate()
+
+      const refresh = localStorage.getItem('refresh_token')
 
       const body = JSON.stringify({
         refresh
@@ -125,9 +136,20 @@ export const fetchLogout = createAsyncThunk(
 
       const response = await axiosInstance.post('logout/', body)
 
-      const data = await response.json()
+      const data = response.data
 
-      if (response.status === 200) {
+      if (response.status === 205) {
+        // Eliminar los tokens del localStorage
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+
+        // Llamar a fetchCheckAuth para actualizar el estado de autenticación
+        const { dispatch } = thunkAPI
+        dispatch(fetchCheckAuth())
+
+        // const navigate = useNavigate()
+        // navigate('/login')
+
         return data
       } else {
         return thunkAPI.rejectWithValue(data)

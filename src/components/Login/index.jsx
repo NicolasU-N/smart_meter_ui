@@ -20,11 +20,11 @@ const LoginPage = () => {
   }, [registered])
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   })
 
-  const { email, password } = formData
+  const { username, password } = formData
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -32,7 +32,7 @@ const LoginPage = () => {
 
   const onSubmit = e => {
     e.preventDefault()
-    dispatch(fetchLogin({ email, password }))
+    dispatch(fetchLogin({ username, password }))
   }
 
   if (isAuthenticated) return <Navigate to='/dashboard' />
@@ -42,15 +42,15 @@ const LoginPage = () => {
       <h1>Log into your Account</h1>
       <form className='mt-5' onSubmit={onSubmit}>
         <div className='form-group'>
-          <label className='form-label' htmlFor='email'>
-            Email
+          <label className='form-label' htmlFor='username'>
+            Username
           </label>
           <input
             className='form-control'
-            type='email'
-            name='email'
+            type='text'
+            name='username'
             onChange={onChange}
-            value={email}
+            value={username}
             required
           />
         </div>

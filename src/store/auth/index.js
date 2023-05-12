@@ -33,6 +33,7 @@ const authSlice = createSlice({
         state.loading = true
       })
       .addCase(fetchLogin.fulfilled, state => {
+        // console.log('fetchLogin.fulfilled!')
         state.loading = false
         state.isAuthenticated = true
       })
@@ -58,6 +59,8 @@ const authSlice = createSlice({
       })
       .addCase(fetchCheckAuth.rejected, state => {
         state.loading = false
+        state.isAuthenticated = false
+        state.user = null
       })
       .addCase(fetchLogout.pending, state => {
         state.loading = true

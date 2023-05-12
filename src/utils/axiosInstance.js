@@ -9,19 +9,17 @@ const axiosInstance = axios.create({
   }
 })
 
-// if (typeof window !== 'undefined') {
-//   axiosInstance.interceptors.request.use(
-//     (config) => {
-//       const token = localStorage.getItem('token')
-//       if (token) {
-//         config.headers.Authorization = `Bearer ${token}`
-//       }
-//       return config
-//     },
-//     (error) => {
-//       return Promise.reject(error)
-//     }
-//   )
-// }
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('access_token')
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 export default axiosInstance
