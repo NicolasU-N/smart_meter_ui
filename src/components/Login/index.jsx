@@ -9,7 +9,7 @@ import Layout from '@components/Layout'
 
 const LoginPage = () => {
   const dispatch = useDispatch()
-  const { loading, isAuthenticated, registered } = useSelector(
+  const { authLoading, isAuthenticated, registered } = useSelector(
     state => state.auth
   )
 
@@ -67,9 +67,9 @@ const LoginPage = () => {
             required
           />
         </div>
-        {loading
+        {authLoading
           ? (
-            <div className='spinner-border text-primary' role='status'>
+            <div className='spinner-border text-primary mt-4' role='status'>
               <span className='visually-hidden'>Loading...</span>
             </div>
             )

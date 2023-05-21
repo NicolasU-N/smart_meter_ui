@@ -2,7 +2,7 @@ import axiosInstance from '@axiosInstance'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 // import { authActions } from './index'
 
@@ -126,8 +126,6 @@ export const fetchLogout = createAsyncThunk(
   'auth/logout',
   async (_, thunkAPI) => {
     try {
-      const navigate = useNavigate()
-
       const refresh = localStorage.getItem('refresh_token')
 
       const body = JSON.stringify({
@@ -147,10 +145,7 @@ export const fetchLogout = createAsyncThunk(
         const { dispatch } = thunkAPI
         dispatch(fetchCheckAuth())
 
-        // const navigate = useNavigate()
-        // navigate('/login')
-
-        return data
+        return response
       } else {
         return thunkAPI.rejectWithValue(data)
       }
