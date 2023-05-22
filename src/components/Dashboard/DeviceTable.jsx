@@ -52,6 +52,7 @@ function DevicesTable () {
         id: 'details',
         Header: '',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ value }) => (
           <Link to={`/devices/${value}/history`} className='btn btn-primary'>
             View Details
@@ -75,44 +76,46 @@ function DevicesTable () {
   } = tableInstance
 
   return (
-    <table className='table table-striped table-hover table-bordered' {...getTableProps()}>
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-            {headerGroup.headers.map(column => (
-              <th
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-                className='text-center px-2'
-                key={column.id}
-              >
-                {column.render('Header')}
-                <span>
-                  {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                </span>
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
-          prepareRow(row)
-          return (
-            <tr {...row.getRowProps()} key={row.id}>
-              {row.cells.map(cell => (
-                <td
-                  {...cell.getCellProps()}
+    <div className='table-responsive'>
+      <table className='table table-striped table-hover table-bordered' {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+              {headerGroup.headers.map(column => (
+                <th
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
                   className='text-center px-2'
-                  key={cell.column.id}
+                  key={column.id}
                 >
-                  {cell.render('Cell')}
-                </td>
+                  {column.render('Header')}
+                  <span>
+                    {column.canSort ? column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ' ▶️' : ''}
+                  </span>
+                </th>
               ))}
             </tr>
-          )
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row)
+            return (
+              <tr {...row.getRowProps()} key={row.id}>
+                {row.cells.map(cell => (
+                  <td
+                    {...cell.getCellProps()}
+                    className='text-center px-2'
+                    key={cell.column.id}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
