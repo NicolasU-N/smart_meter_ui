@@ -38,7 +38,7 @@ function App () {
           <Route exact path='/devices/:deviceId/history' element={<DeviceHistory />} />
           {/* <Route path='/users/*' element={<UsersContainer />} /> */}
         </Routes>
-        {(!isAuthenticated && !authLoading) && <Navigate to='/login' />}
+        {/* {(!isAuthenticated && !authLoading) && <Navigate to='/login' />} */}
       </BrowserRouter>
     </>
   )

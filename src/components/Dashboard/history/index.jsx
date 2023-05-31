@@ -2,34 +2,14 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchMeasurementDeviceId } from '@store/devices/actions'
 import { useParams } from 'react-router-dom'
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { format, startOfDay } from 'date-fns'
 
 import Layout from '@components/Layout'
 import Loader from '../Loader'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
 const DeviceHistory = () => {
   const dispatch = useDispatch()
@@ -40,7 +20,7 @@ const DeviceHistory = () => {
     datasets: []
   })
   const [chartOptions, setChartOptions] = useState({})
-  const [filterDate, setFilterDate] = useState(undefined)
+  const [filterDate, setFilterDate] = useState('week')
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -58,11 +38,14 @@ const DeviceHistory = () => {
     if (measurements && measurements.length > 0) {
       const filteredMeasurements = filterMeasurementsByDate(measurements, filterDate)
       const groupedMeasurements = groupMeasurementsByDay(filteredMeasurements)
-      const labels = Object.keys(groupedMeasurements).map(label => format(Number(label), 'dd MMM yyyy'))
+      const sortedLabels = Object.keys(groupedMeasurements)
+        .map(label => Number(label))
+        .sort((a, b) => a - b)
+        .map(label => format(label, 'dd MMM yyyy'))
       const values = Object.values(groupedMeasurements).map(getLastValue)
 
       setChartData({
-        labels,
+        labels: sortedLabels,
         datasets: [
           {
             label: 'Liters',
@@ -86,21 +69,26 @@ const DeviceHistory = () => {
           },
           title: {
             display: true,
-            // text: 'Chart.js Line Chart'
             text: filterDate === 'year' ? 'Annual consumption' : filterDate === 'month' ? 'Monthly consumption' : filterDate === 'week' ? 'Weekly consumption' : 'All consumption'
-          },
-          scales: {
-            x: {
-              ticks: { color: 'rgb(75, 192, 192)' }
-            },
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true
-                }
-              }
-            ]
           }
+        },
+        scales: {
+          x: {
+            // color: 'rgb(75, 192, 192)',
+            color: 'rgb(20, 20, 20)',
+            ticks: {
+              autoSkip: false,
+              maxRotation: 45,
+              minRotation: 45
+            }
+          },
+          y: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
         }
       })
     }
@@ -111,17 +99,14 @@ const DeviceHistory = () => {
       return measurements
     }
 
-    // Filtrar por año
     if (filterDate === 'year') {
       return measurements.filter(entry => {
         const measurementDate = new Date(entry.created_at)
         const currentYear = new Date().getFullYear()
         return measurementDate.getFullYear() === currentYear
-        // change title of graph to Annual consumption
       })
     }
 
-    // Filtrar por mes
     if (filterDate === 'month') {
       return measurements.filter(entry => {
         const measurementDate = new Date(entry.created_at)
@@ -134,7 +119,6 @@ const DeviceHistory = () => {
       })
     }
 
-    // Filtrar por semana
     if (filterDate === 'week') {
       return measurements.filter(entry => {
         const measurementDate = new Date(entry.created_at)
@@ -179,7 +163,6 @@ const DeviceHistory = () => {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7)
   }
 
-  // Resto del código sin cambios
   if (deviceLoading) {
     return <Loader />
   }
@@ -188,24 +171,30 @@ const DeviceHistory = () => {
     <Layout title='Smart Meter App | History' content='Measurement history'>
       <div>
         <h1>Measurement history</h1>
-        <div>
-          <label htmlFor='filterDate' className='col-md-1'>Filter by: </label>
-          <select id='filterDate' value={filterDate} onChange={handleFilterChange}>
-            <option value=''>All</option>
-            <option value='year'>Annual</option>
-            <option value='month'>Monthly</option>
-            <option value='week'>Weekly</option>
-          </select>
+
+        <div className='d-flex'>
+          <div className='col-10'>
+            {measurements && measurements.length > 0
+              ? (
+                <Line data={chartData} options={chartOptions} />
+                )
+              : (
+                <p>There are no measurement data available.</p>
+                )}
+          </div>
+          <div className='col-2'>
+            <label htmlFor='filterDate'>Filter by:</label>
+            <select id='filterDate' value={filterDate} onChange={handleFilterChange} className='form-select'>
+              <option value=''>All</option>
+              <option value='year'>Annual</option>
+              <option value='month'>Monthly</option>
+              <option value='week'>Weekly</option>
+            </select>
+          </div>
         </div>
-        {measurements && measurements.length > 0
-          ? (
-            <Line data={chartData} options={chartOptions} />
-            )
-          : (
-            <p>There are no measurement data available.</p>
-            )}
       </div>
     </Layout>
+
   )
 }
 
